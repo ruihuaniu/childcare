@@ -14,11 +14,9 @@
     --clay: #C4956A;
     --clay-dark: #A67A52;
     --forest: #2D4A3E;
-    --forest-light: #3D6054;
     --charcoal: #1E2723;
     --muted: #7A8C85;
     --white: #FEFCF9;
-    --accent: #D4845A;
   }
 
   body {
@@ -29,12 +27,12 @@
     overflow-x: hidden;
   }
 
-  /* Background pattern */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: radial-gradient(circle at 20% 20%, rgba(196,149,106,0.08) 0%, transparent 50%),
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(196,149,106,0.08) 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, rgba(45,74,62,0.08) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
@@ -74,10 +72,7 @@
     margin-bottom: 12px;
   }
 
-  h1 em {
-    font-style: italic;
-    color: var(--clay);
-  }
+  h1 em { font-style: italic; color: var(--clay); }
 
   .subtitle {
     color: var(--muted);
@@ -86,19 +81,22 @@
     line-height: 1.6;
   }
 
-  /* Card */
+  /* ── Card ── */
   .card {
     background: var(--white);
     border-radius: 20px;
-    padding: 36px;
     box-shadow: 0 4px 32px rgba(45,74,62,0.08), 0 1px 4px rgba(45,74,62,0.04);
     margin-bottom: 20px;
+    overflow: hidden;
     animation: fadeUp 0.5s ease both;
   }
 
   .card:nth-child(2) { animation-delay: 0.1s; }
   .card:nth-child(3) { animation-delay: 0.2s; }
 
+  .card-body { padding: 36px; }
+
+  /* ── Card title (plain) ── */
   .card-title {
     font-family: 'DM Serif Display', serif;
     font-size: 1.1rem;
@@ -111,7 +109,50 @@
     gap: 10px;
   }
 
-  .card-title .icon {
+  /* ── Collapsible card header (clickable) ── */
+  .card-toggle {
+    width: 100%;
+    padding: 24px 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--forest);
+    text-align: left;
+    border-bottom: 1.5px solid var(--warm);
+    transition: background 0.15s;
+  }
+
+  .card-toggle:hover { background: rgba(45,74,62,0.03); }
+
+  .card-toggle .chevron {
+    margin-left: auto;
+    width: 20px; height: 20px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+    color: var(--muted);
+  }
+
+  .card-toggle.collapsed .chevron { transform: rotate(-90deg); }
+
+  .collapsible-body {
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.25s ease;
+    max-height: 2000px;
+    opacity: 1;
+  }
+
+  .collapsible-body.collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .card-title .icon,
+  .card-toggle .icon {
     width: 32px; height: 32px;
     background: var(--forest);
     color: var(--cream);
@@ -121,7 +162,7 @@
     flex-shrink: 0;
   }
 
-  /* Grid */
+  /* ── Grid ── */
   .fields-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -130,12 +171,13 @@
 
   @media (max-width: 520px) {
     .fields-grid { grid-template-columns: 1fr; }
-    .card { padding: 24px; }
+    .card-body { padding: 24px; }
+    .card-toggle { padding: 20px 24px; }
   }
 
   .field-full { grid-column: 1 / -1; }
 
-  /* Field */
+  /* ── Field ── */
   .field { display: flex; flex-direction: column; gap: 8px; }
 
   label {
@@ -146,9 +188,7 @@
     color: var(--muted);
   }
 
-  .input-wrap {
-    position: relative;
-  }
+  .input-wrap { position: relative; }
 
   .prefix, .suffix {
     position: absolute;
@@ -162,7 +202,7 @@
   .prefix { left: 14px; }
   .suffix { right: 14px; }
 
-  input[type="number"], input[type="text"], select {
+  input[type="number"], select {
     width: 100%;
     padding: 13px 16px;
     background: var(--cream);
@@ -194,10 +234,8 @@
     cursor: pointer;
   }
 
-  /* Days selector */
-  .days-selector {
-    display: flex; gap: 8px; flex-wrap: wrap;
-  }
+  /* ── Days selector ── */
+  .days-selector { display: flex; gap: 8px; flex-wrap: wrap; }
 
   .day-btn {
     width: 44px; height: 44px;
@@ -214,15 +252,10 @@
   }
 
   .day-btn:hover { border-color: var(--clay); color: var(--clay); }
-  .day-btn.active {
-    background: var(--forest);
-    border-color: var(--forest);
-    color: var(--cream);
-  }
+  .day-btn.active { background: var(--forest); border-color: var(--forest); color: var(--cream); }
 
-  /* Slider */
+  /* ── Slider ── */
   .slider-wrap { display: flex; flex-direction: column; gap: 12px; }
-  .slider-row { display: flex; align-items: center; gap: 14px; }
 
   .slider-track-wrap {
     position: relative;
@@ -231,6 +264,8 @@
     display: flex;
     align-items: center;
   }
+
+  .slider-input-row { display: flex; align-items: center; gap: 12px; }
 
   input[type="range"] {
     -webkit-appearance: none;
@@ -272,20 +307,8 @@
     border: 3px solid white;
   }
 
-  input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 3px 12px rgba(45,74,62,0.4);
-  }
-
-  input[type="range"]:active::-webkit-slider-thumb {
-    transform: scale(1.2);
-  }
-
-  .slider-input-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); box-shadow: 0 3px 12px rgba(45,74,62,0.4); }
+  input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.2); }
 
   .ccs-number-wrap {
     position: relative;
@@ -320,7 +343,7 @@
     pointer-events: none;
   }
 
-  /* Income brackets */
+  /* ── Income brackets ── */
   .income-brackets {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -340,47 +363,16 @@
   }
 
   .bracket-btn:hover { border-color: var(--clay); }
+  .bracket-btn.active { background: rgba(45,74,62,0.07); border-color: var(--forest); }
 
-  .bracket-btn.active {
-    background: rgba(45,74,62,0.07);
-    border-color: var(--forest);
-  }
+  .bracket-rate { display: block; font-size: 15px; font-weight: 700; color: var(--forest); line-height: 1.2; }
+  .bracket-income { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
+  .bracket-label { display: block; font-size: 9px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--clay); margin-top: 2px; }
 
-  .bracket-rate {
-    display: block;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--forest);
-    line-height: 1.2;
-  }
+  /* ── Hint ── */
+  .hint { font-size: 11.5px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
 
-  .bracket-income {
-    display: block;
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 3px;
-    line-height: 1.3;
-  }
-
-  .bracket-label {
-    display: block;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--clay);
-    margin-top: 2px;
-  }
-
-  /* Hint */
-  .hint {
-    font-size: 11.5px;
-    color: var(--muted);
-    margin-top: 4px;
-    line-height: 1.5;
-  }
-
-  /* Info chip */
+  /* ── Info chip ── */
   .info-chip {
     display: inline-flex;
     align-items: center;
@@ -390,10 +382,9 @@
     font-size: 11.5px;
     padding: 4px 10px;
     border-radius: 6px;
-    margin-top: 6px;
   }
 
-  /* Results card */
+  /* ── Results card ── */
   .results-card {
     background: var(--forest);
     color: var(--white);
@@ -438,9 +429,7 @@
     z-index: 1;
   }
 
-  @media (max-width: 520px) {
-    .results-grid { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 520px) { .results-grid { grid-template-columns: 1fr; } }
 
   .result-item {
     background: rgba(255,255,255,0.06);
@@ -455,32 +444,12 @@
     grid-column: 1 / -1;
   }
 
-  .result-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    opacity: 0.65;
-    margin-bottom: 8px;
-  }
+  .result-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.65; margin-bottom: 8px; }
+  .result-value { font-family: 'DM Serif Display', serif; font-size: 1.7rem; line-height: 1; transition: all 0.3s ease; }
+  .result-item.highlight .result-value { font-size: 2.2rem; }
+  .result-sub { font-size: 12px; opacity: 0.6; margin-top: 5px; }
 
-  .result-value {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.7rem;
-    line-height: 1;
-  }
-
-  .result-item.highlight .result-value {
-    font-size: 2.2rem;
-  }
-
-  .result-sub {
-    font-size: 12px;
-    opacity: 0.6;
-    margin-top: 5px;
-  }
-
-  /* Breakdown */
+  /* ── Breakdown ── */
   .breakdown {
     margin-top: 20px;
     background: rgba(255,255,255,0.05);
@@ -490,14 +459,7 @@
     z-index: 1;
   }
 
-  .breakdown-title {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    opacity: 0.6;
-    margin-bottom: 14px;
-  }
+  .breakdown-title { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.6; margin-bottom: 14px; }
 
   .breakdown-row {
     display: flex;
@@ -509,18 +471,11 @@
   }
 
   .breakdown-row:last-child { border-bottom: none; }
-
   .breakdown-row span:first-child { opacity: 0.75; }
   .breakdown-row span:last-child { font-weight: 600; }
+  .breakdown-row.total { font-weight: 600; padding-top: 12px; font-size: 14.5px; }
 
-  .breakdown-row.total {
-    opacity: 1;
-    font-weight: 600;
-    padding-top: 12px;
-    font-size: 14.5px;
-  }
-
-  /* Note */
+  /* ── Note ── */
   .note {
     background: rgba(196,149,106,0.12);
     border-left: 3px solid var(--clay);
@@ -530,29 +485,13 @@
     font-size: 12.5px;
     color: var(--muted);
     line-height: 1.6;
-    position: relative;
-    z-index: 1;
     animation: fadeUp 0.5s ease 0.4s both;
   }
 
-  /* Animations */
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .result-value { transition: all 0.3s ease; }
-
-  /* Saved indicator */
+  /* ── Saved indicator ── */
   .saved-indicator {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    bottom: 24px; right: 24px;
     background: var(--forest);
     color: var(--cream);
     font-size: 12px;
@@ -568,12 +507,20 @@
     z-index: 100;
   }
 
-  .saved-indicator.visible {
-    opacity: 1;
-    transform: translateY(0);
+  .saved-indicator.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── Animations ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* Footer */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Footer ── */
   footer {
     text-align: center;
     margin-top: 40px;
@@ -593,138 +540,166 @@
     <p class="subtitle">Estimate your out-of-pocket costs after the<br>Child Care Subsidy (CCS) is applied.</p>
   </header>
 
-  <!-- Card 1: Centre Details -->
+  <!-- Card 1: Centre & Booking -->
   <div class="card">
-    <div class="card-title">
-      <div class="icon">🏫</div>
-      Centre & Booking
-    </div>
-    <div class="fields-grid">
-
-      <div class="field">
-        <label>Daily Fee Charged</label>
-        <div class="input-wrap">
-          <span class="prefix">$</span>
-          <input type="number" id="dailyRate" class="has-prefix" min="0" step="0.50" value="165" placeholder="e.g. 165">
-        </div>
-        <p class="hint">Full daily fee set by the centre</p>
+    <div class="card-body">
+      <div class="card-title">
+        <div class="icon">🏫</div>
+        Centre & Booking
       </div>
+      <div class="fields-grid">
 
-      <div class="field">
-        <label>Operating Hours / Day</label>
-        <div class="input-wrap">
-          <input type="number" id="opHours" class="has-suffix" min="1" max="24" step="0.5" value="11" placeholder="e.g. 11">
-          <span class="suffix">hrs</span>
+        <div class="field">
+          <label>Daily Fee Charged</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="dailyRate" class="has-prefix" min="0" step="0.50" value="165" placeholder="e.g. 165">
+          </div>
+          <p class="hint">Full daily fee set by the centre</p>
         </div>
-        <p class="hint">Typical centre hours (e.g. 7am–6pm = 11hrs)</p>
-      </div>
 
-      <div class="field field-full">
-        <label>Days Booked Per Week</label>
-        <div class="days-selector" id="daysSelector">
-          <button class="day-btn active" data-day="Mon">Mon</button>
-          <button class="day-btn active" data-day="Tue">Tue</button>
-          <button class="day-btn active" data-day="Wed">Wed</button>
-          <button class="day-btn active" data-day="Thu">Thu</button>
-          <button class="day-btn active" data-day="Fri">Fri</button>
+        <div class="field">
+          <label>Operating Hours / Day</label>
+          <div class="input-wrap">
+            <input type="number" id="opHours" class="has-suffix" min="1" max="24" step="0.5" value="11" placeholder="e.g. 11">
+            <span class="suffix">hrs</span>
+          </div>
+          <p class="hint">Total hours centre is open (e.g. 7am–6pm = 11hrs)</p>
         </div>
-        <p class="hint" id="daysHint">5 days selected</p>
-      </div>
 
+        <div class="field field-full">
+          <label>Days Booked Per Week</label>
+          <div class="days-selector" id="daysSelector">
+            <button class="day-btn active" data-day="Mon">Mon</button>
+            <button class="day-btn active" data-day="Tue">Tue</button>
+            <button class="day-btn active" data-day="Wed">Wed</button>
+            <button class="day-btn active" data-day="Thu">Thu</button>
+            <button class="day-btn active" data-day="Fri">Fri</button>
+          </div>
+          <p class="hint" id="daysHint">5 days selected</p>
+        </div>
+
+      </div>
     </div>
   </div>
 
-  <!-- Card 2: CCS Settings -->
-  <div class="card">
-    <div class="card-title">
+  <!-- Card 2: CCS (collapsible) -->
+  <div class="card" id="ccsCard">
+    <button class="card-toggle" id="ccsToggle" aria-expanded="true" aria-controls="ccsBody">
       <div class="icon">🏛</div>
       Child Care Subsidy (CCS)
-    </div>
-    <div class="fields-grid">
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
 
-      <div class="field">
-        <label>CCS Hourly Rate Cap</label>
-        <div class="input-wrap">
-          <span class="prefix">$</span>
-          <select id="rateCap" style="padding-left:28px;">
-            <option value="14.63">$14.63 — Centre-Based Day Care (below school age)</option>
-            <option value="12.81">$12.81 — Outside School Hours Care (school age)</option>
-            <option value="13.56">$13.56 — Family Day Care (all ages)</option>
-            <option value="39.80">$39.80 — In Home Care (per family)</option>
-            <option value="custom">Custom rate…</option>
-          </select>
-        </div>
-        <p class="hint">2025–26 government hourly rate cap by service type (effective 7 July 2025)</p>
-      </div>
+    <div class="collapsible-body" id="ccsBody">
+      <div class="card-body" style="padding-top:28px;">
+        <div class="fields-grid">
 
-      <div class="field" id="customRateField" style="display:none;">
-        <label>Custom Hourly Rate Cap</label>
-        <div class="input-wrap">
-          <span class="prefix">$</span>
-          <input type="number" id="customRate" class="has-prefix" min="0" step="0.01" placeholder="e.g. 14.29">
-        </div>
-      </div>
-
-      <div class="field field-full">
-        <label>Your CCS Rate</label>
-        <div class="slider-wrap">
-          <div class="slider-input-row">
-            <div class="slider-track-wrap">
-              <div class="slider-track-bg"><div class="slider-track-fill" id="sliderFill" style="width:77.78%"></div></div>
-              <input type="range" id="subsidySlider" min="0" max="90" step="0.1" value="70">
+          <!-- Rate Cap -->
+          <div class="field">
+            <label>CCS Hourly Rate Cap</label>
+            <div class="input-wrap">
+              <span class="prefix">$</span>
+              <select id="rateCap" style="padding-left:28px;">
+                <option value="14.63">$14.63 — Centre-Based Day Care (below school age)</option>
+                <option value="12.81">$12.81 — Outside School Hours Care (school age)</option>
+                <option value="13.56">$13.56 — Family Day Care (all ages)</option>
+                <option value="39.80">$39.80 — In Home Care (per family)</option>
+                <option value="custom">Custom rate…</option>
+              </select>
             </div>
-            <div class="ccs-number-wrap">
-              <input type="number" id="subsidyNumber" min="0" max="90" step="0.1" value="70">
-              <span class="pct-suffix">%</span>
+            <p class="hint">2025–26 government hourly rate cap by service type (effective 7 July 2025)</p>
+          </div>
+
+          <!-- Custom rate cap -->
+          <div class="field" id="customRateField" style="display:none;">
+            <label>Custom Hourly Rate Cap</label>
+            <div class="input-wrap">
+              <span class="prefix">$</span>
+              <input type="number" id="customRate" class="has-prefix" min="0" step="0.01" placeholder="e.g. 14.63">
             </div>
           </div>
+
+          <!-- Subsidy Hours -->
+          <div class="field" id="subsidyHoursField">
+            <label>Subsidised Hours / Fortnight</label>
+            <div class="input-wrap">
+              <select id="subsidyHours">
+                <option value="0">0 hrs — No activity / not meeting test</option>
+                <option value="36">36 hrs — Meets lower activity test</option>
+                <option value="72" selected>72 hrs — Meets standard activity test</option>
+                <option value="100">100 hrs — Meets higher activity test</option>
+              </select>
+            </div>
+            <p class="hint">Based on your fortnightly activity level (work, study, volunteering, etc.)</p>
+          </div>
+
+          <!-- CCS Rate full-width -->
+          <div class="field field-full">
+            <label>Your CCS Rate</label>
+            <div class="slider-wrap">
+              <div class="slider-input-row">
+                <div class="slider-track-wrap">
+                  <div class="slider-track-bg"><div class="slider-track-fill" id="sliderFill" style="width:77.78%"></div></div>
+                  <input type="range" id="subsidySlider" min="0" max="90" step="0.1" value="70">
+                </div>
+                <div class="ccs-number-wrap">
+                  <input type="number" id="subsidyNumber" min="0" max="90" step="0.1" value="70">
+                  <span class="pct-suffix">%</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="hint" style="margin-bottom:10px;">Select a common bracket below, or drag the slider / type your exact rate:</p>
+
+            <div class="income-brackets" id="incomeBrackets">
+              <button class="bracket-btn" data-rate="90">
+                <span class="bracket-rate">90%</span>
+                <span class="bracket-income">≤ $85,279</span>
+                <span class="bracket-label">Max subsidy</span>
+              </button>
+              <button class="bracket-btn" data-rate="80">
+                <span class="bracket-rate">80%</span>
+                <span class="bracket-income">~$135k</span>
+                <span class="bracket-label">High</span>
+              </button>
+              <button class="bracket-btn" data-rate="75">
+                <span class="bracket-rate">75%</span>
+                <span class="bracket-income">~$160k</span>
+                <span class="bracket-label">Common</span>
+              </button>
+              <button class="bracket-btn" data-rate="65">
+                <span class="bracket-rate">65%</span>
+                <span class="bracket-income">~$210k</span>
+                <span class="bracket-label">Mid</span>
+              </button>
+              <button class="bracket-btn" data-rate="50">
+                <span class="bracket-rate">50%</span>
+                <span class="bracket-income">~$285k</span>
+                <span class="bracket-label">Lower</span>
+              </button>
+              <button class="bracket-btn" data-rate="0">
+                <span class="bracket-rate">0%</span>
+                <span class="bracket-income">≥ $535,279</span>
+                <span class="bracket-label">No subsidy</span>
+              </button>
+            </div>
+
+            <p class="hint" style="margin-top:10px;">
+              Income ≤ $85,279 = 90% · Reduces 1% per $5,000 above · Cutoff at $535,279 ·
+              Use <a href="https://www.servicesaustralia.gov.au/child-care-subsidy-estimator" target="_blank" style="color:var(--clay);">Services Australia estimator</a> for your exact rate · Accepts decimals e.g. 72.5%
+            </p>
+          </div>
+
         </div>
-
-        <p class="hint" style="margin-bottom:10px;">Select a common bracket below, or drag the slider / type your exact rate:</p>
-
-        <div class="income-brackets" id="incomeBrackets">
-          <button class="bracket-btn" data-rate="90">
-            <span class="bracket-rate">90%</span>
-            <span class="bracket-income">≤ $85,279</span>
-            <span class="bracket-label">Max subsidy</span>
-          </button>
-          <button class="bracket-btn" data-rate="80">
-            <span class="bracket-rate">80%</span>
-            <span class="bracket-income">~$135k</span>
-            <span class="bracket-label">High</span>
-          </button>
-          <button class="bracket-btn" data-rate="75">
-            <span class="bracket-rate">75%</span>
-            <span class="bracket-income">~$160k</span>
-            <span class="bracket-label">Common</span>
-          </button>
-          <button class="bracket-btn" data-rate="65">
-            <span class="bracket-rate">65%</span>
-            <span class="bracket-income">~$210k</span>
-            <span class="bracket-label">Mid</span>
-          </button>
-          <button class="bracket-btn" data-rate="50">
-            <span class="bracket-rate">50%</span>
-            <span class="bracket-income">~$285k</span>
-            <span class="bracket-label">Lower</span>
-          </button>
-          <button class="bracket-btn" data-rate="0">
-            <span class="bracket-rate">0%</span>
-            <span class="bracket-income">≥ $535,279</span>
-            <span class="bracket-label">No subsidy</span>
-          </button>
-        </div>
-
-        <p class="hint" style="margin-top:10px;">
-          Income ≤ $85,279 = 90% · Reduces 1% per $5,000 above · Cutoff at $535,279 · Use <a href="https://www.servicesaustralia.gov.au/child-care-subsidy-estimator" target="_blank" style="color:var(--clay);">Services Australia estimator</a> for your exact rate
-        </p>
       </div>
-
     </div>
   </div>
 
   <!-- Results -->
-  <div class="results-card" id="results">
+  <div class="results-card">
     <div class="results-header">📊 Your Estimated Costs</div>
 
     <div class="results-grid">
@@ -746,9 +721,9 @@
     </div>
 
     <div class="breakdown">
-      <div class="breakdown-title">Annual Estimates</div>
+      <div class="breakdown-title">Annual Estimates (50 weeks)</div>
       <div class="breakdown-row">
-        <span>Annual gross fees (50 weeks)</span>
+        <span>Annual gross fees</span>
         <span id="r-annual-gross">—</span>
       </div>
       <div class="breakdown-row">
@@ -772,6 +747,14 @@
         <span id="c-cap">—</span>
       </div>
       <div class="breakdown-row">
+        <span>Subsidised hrs/fortnight</span>
+        <span id="c-sub-hours">—</span>
+      </div>
+      <div class="breakdown-row">
+        <span>Subsidised hrs/week (÷2)</span>
+        <span id="c-sub-hours-week">—</span>
+      </div>
+      <div class="breakdown-row">
         <span>CCS hourly amount</span>
         <span id="c-ccs-hourly">—</span>
       </div>
@@ -780,11 +763,10 @@
         <span id="c-gap">—</span>
       </div>
     </div>
-
   </div>
 
   <div class="note">
-    ⚠️ <strong>Estimate only.</strong> This calculator uses 2025–26 CCS hourly rate caps (effective 7 July 2025). Actual subsidy depends on your income, immunisation status, activity level, and annual cap. Gap fees may vary. Confirm figures with your centre and <a href="https://www.servicesaustralia.gov.au" target="_blank" style="color:var(--clay-dark);">Services Australia</a>.
+    ⚠️ <strong>Estimate only.</strong> This calculator uses 2025–26 CCS hourly rate caps (effective 7 July 2025). Actual subsidy depends on your income, immunisation status, activity test result, and the annual CCS cap. Gap fees may vary. Confirm figures with your centre and <a href="https://www.servicesaustralia.gov.au" target="_blank" style="color:var(--clay-dark);">Services Australia</a>.
   </div>
 
   <div id="savedIndicator" class="saved-indicator">✓ Saved</div>
@@ -797,19 +779,21 @@
 </div>
 
 <script>
-  const LS_KEY = 'ccs-calc-v1';
+  const LS_KEY = 'ccs-calc-v2';
 
-  // ── Persist helpers ──────────────────────────────────────────────
+  // ── Save / Load ────────────────────────────────────────────────
   function saveState() {
     try {
       const activeDays = [...document.querySelectorAll('.day-btn.active')].map(b => b.dataset.day);
       localStorage.setItem(LS_KEY, JSON.stringify({
-        dailyRate:  document.getElementById('dailyRate').value,
-        opHours:    document.getElementById('opHours').value,
-        days:       activeDays,
-        rateCap:    document.getElementById('rateCap').value,
-        customRate: document.getElementById('customRate').value,
-        ccsRate:    document.getElementById('subsidySlider').value,
+        dailyRate:    document.getElementById('dailyRate').value,
+        opHours:      document.getElementById('opHours').value,
+        days:         activeDays,
+        rateCap:      document.getElementById('rateCap').value,
+        customRate:   document.getElementById('customRate').value,
+        ccsRate:      document.getElementById('subsidySlider').value,
+        subsidyHours: document.getElementById('subsidyHours').value,
+        ccsCollapsed: document.getElementById('ccsToggle').classList.contains('collapsed'),
       }));
       showSaved();
     } catch(e) {}
@@ -818,12 +802,10 @@
   function loadState() {
     try {
       const raw = localStorage.getItem(LS_KEY);
-      if (!raw) return false;
-      return JSON.parse(raw);
-    } catch(e) { return false; }
+      return raw ? JSON.parse(raw) : null;
+    } catch(e) { return null; }
   }
 
-  // Saved indicator
   const savedEl = document.getElementById('savedIndicator');
   let savedTimer;
   function showSaved() {
@@ -832,26 +814,41 @@
     savedTimer = setTimeout(() => savedEl.classList.remove('visible'), 1800);
   }
 
-  // ── Days selector ────────────────────────────────────────────────
-  const dayBtns = document.querySelectorAll('.day-btn');
-  dayBtns.forEach(btn => {
+  // ── Collapsible CCS section ────────────────────────────────────
+  const ccsToggle = document.getElementById('ccsToggle');
+  const ccsBody   = document.getElementById('ccsBody');
+
+  function setCCSCollapsed(collapsed, persist = true) {
+    ccsToggle.classList.toggle('collapsed', collapsed);
+    ccsBody.classList.toggle('collapsed', collapsed);
+    ccsToggle.setAttribute('aria-expanded', String(!collapsed));
+    if (persist) saveState();
+  }
+
+  ccsToggle.addEventListener('click', () => {
+    const isNowCollapsed = !ccsToggle.classList.contains('collapsed');
+    setCCSCollapsed(isNowCollapsed);
+  });
+
+  // ── Days selector ──────────────────────────────────────────────
+  document.querySelectorAll('.day-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       btn.classList.toggle('active');
-      saveState();
-      calc();
+      saveState(); calc();
     });
   });
 
   function getDays() {
     const active = document.querySelectorAll('.day-btn.active').length;
-    document.getElementById('daysHint').textContent = active === 0 ? 'No days selected' : `${active} day${active !== 1 ? 's' : ''} selected`;
+    document.getElementById('daysHint').textContent =
+      active === 0 ? 'No days selected' : `${active} day${active !== 1 ? 's' : ''} selected`;
     return active;
   }
 
-  // ── CCS slider + number input ────────────────────────────────────
-  const slider  = document.getElementById('subsidySlider');
+  // ── CCS rate slider + number ───────────────────────────────────
+  const slider   = document.getElementById('subsidySlider');
   const numInput = document.getElementById('subsidyNumber');
-  const fill    = document.getElementById('sliderFill');
+  const fill     = document.getElementById('sliderFill');
 
   function setCCS(val, persist = true) {
     val = Math.max(0, Math.min(90, parseFloat(val) || 0));
@@ -874,83 +871,104 @@
     btn.addEventListener('click', () => setCCS(btn.dataset.rate));
   });
 
-  // ── Rate cap select ──────────────────────────────────────────────
+  // ── Rate cap + custom ─────────────────────────────────────────
   const rateCapSel  = document.getElementById('rateCap');
   const customField = document.getElementById('customRateField');
+
   rateCapSel.addEventListener('change', () => {
     customField.style.display = rateCapSel.value === 'custom' ? 'flex' : 'none';
-    saveState();
-    calc();
+    saveState(); calc();
   });
   document.getElementById('customRate').addEventListener('input', () => { saveState(); calc(); });
 
-  // ── Other inputs ─────────────────────────────────────────────────
+  // ── Subsidy hours ─────────────────────────────────────────────
+  document.getElementById('subsidyHours').addEventListener('change', () => { saveState(); calc(); });
+
+  // ── Other inputs ─────────────────────────────────────────────
   ['dailyRate', 'opHours'].forEach(id => {
     document.getElementById(id).addEventListener('input', () => { saveState(); calc(); });
   });
 
-  // ── Formatting ───────────────────────────────────────────────────
-  const fmt  = (n) => n < 0 ? `-$${Math.abs(n).toFixed(2)}` : `$${n.toFixed(2)}`;
-  const fmtK = (n) => n >= 1000 ? `$${(n/1000).toFixed(1)}k` : fmt(n);
+  // ── Formatting ────────────────────────────────────────────────
+  const fmt  = n => n < 0 ? `-$${Math.abs(n).toFixed(2)}` : `$${n.toFixed(2)}`;
+  const fmtK = n => n >= 1000 ? `$${(n / 1000).toFixed(1)}k` : fmt(n);
 
-  // ── Calc ─────────────────────────────────────────────────────────
+  // ── Calculation ───────────────────────────────────────────────
   function calc() {
-    const daily = parseFloat(document.getElementById('dailyRate').value) || 0;
-    const hours = parseFloat(document.getElementById('opHours').value)   || 0;
-    const days  = getDays();
-    const subsidyPct = parseFloat(slider.value) / 100;
+    const daily       = parseFloat(document.getElementById('dailyRate').value) || 0;
+    const opHours     = parseFloat(document.getElementById('opHours').value)   || 0;
+    const days        = getDays();
+    const subsidyPct  = parseFloat(slider.value) / 100;
+    const subHoursFn  = parseFloat(document.getElementById('subsidyHours').value) || 0; // per fortnight
+    const subHoursWk  = subHoursFn / 2; // per week
 
     let cap = rateCapSel.value === 'custom'
       ? (parseFloat(document.getElementById('customRate').value) || 0)
       : parseFloat(rateCapSel.value);
 
-    if (!daily || !hours || !days || !cap) return;
+    if (!daily || !opHours || !days || !cap) return;
 
-    const hourlyCharged     = daily / hours;
-    const hourlyForSubsidy  = Math.min(hourlyCharged, cap);
-    const ccsPerHour        = hourlyForSubsidy * subsidyPct;
-    const gapPerHour        = hourlyCharged - ccsPerHour;
-    const gapPerDay         = gapPerHour * hours;
-    const subsidyPerDay     = ccsPerHour * hours;
-    const grossWeekly       = daily * days;
-    const subsidyWeekly     = subsidyPerDay * days;
-    const oopWeekly         = gapPerDay * days;
+    // Total hours booked per week across all days
+    const totalBookedHrsWk = opHours * days;
 
-    document.getElementById('r-gross').textContent       = fmt(grossWeekly);
-    document.getElementById('r-subsidyAmt').textContent  = fmt(subsidyWeekly);
-    document.getElementById('r-weekly').textContent      = fmt(oopWeekly);
-    document.getElementById('r-daily-oop').textContent   = fmt(gapPerDay) + ' per booked day';
-    document.getElementById('r-annual-gross').textContent   = fmtK(grossWeekly * 50);
-    document.getElementById('r-annual-subsidy').textContent = fmtK(subsidyWeekly * 50);
-    document.getElementById('r-annual-oop').textContent     = fmtK(oopWeekly * 50);
+    // Subsidised hours this week = min(subsidised hrs/week, total booked hrs/week)
+    const subsidisedHrsWk  = Math.min(subHoursWk, totalBookedHrsWk);
+    const unsubsidisedHrsWk = totalBookedHrsWk - subsidisedHrsWk;
 
-    document.getElementById('c-hourly').textContent     = fmt(hourlyCharged) + '/hr';
-    document.getElementById('c-cap').textContent        = fmt(cap) + '/hr';
-    document.getElementById('c-ccs-hourly').textContent = fmt(ccsPerHour) + '/hr (' + (subsidyPct*100).toFixed(1) + '% of ' + fmt(hourlyForSubsidy) + ')';
-    document.getElementById('c-gap').textContent        = fmt(gapPerHour) + '/hr';
+    // Hourly rate charged
+    const hourlyCharged    = daily / opHours;
+    // CCS applies to lower of charged rate or cap, for subsidised hours only
+    const hourlyForSubsidy = Math.min(hourlyCharged, cap);
+    const ccsPerHour       = hourlyForSubsidy * subsidyPct;
+    const gapPerHour       = hourlyCharged - ccsPerHour;
+
+    // Weekly amounts
+    const grossWeekly    = daily * days;
+    const subsidyWeekly  = ccsPerHour * subsidisedHrsWk;
+    const oopWeekly      = grossWeekly - subsidyWeekly;
+    const gapPerDay      = oopWeekly / days;
+
+    // Results
+    document.getElementById('r-gross').textContent      = fmt(grossWeekly);
+    document.getElementById('r-subsidyAmt').textContent = fmt(subsidyWeekly);
+    document.getElementById('r-weekly').textContent     = fmt(oopWeekly);
+    document.getElementById('r-daily-oop').textContent  = fmt(gapPerDay) + ' per booked day';
+
+    document.getElementById('r-annual-gross').textContent    = fmtK(grossWeekly * 50);
+    document.getElementById('r-annual-subsidy').textContent  = fmtK(subsidyWeekly * 50);
+    document.getElementById('r-annual-oop').textContent      = fmtK(oopWeekly * 50);
+
+    document.getElementById('c-hourly').textContent       = fmt(hourlyCharged) + '/hr';
+    document.getElementById('c-cap').textContent          = fmt(cap) + '/hr';
+    document.getElementById('c-sub-hours').textContent    = subHoursFn + ' hrs/fortnight';
+    document.getElementById('c-sub-hours-week').textContent = subHoursWk.toFixed(1) + ' hrs/week (of ' + totalBookedHrsWk.toFixed(1) + ' booked)';
+    document.getElementById('c-ccs-hourly').textContent   = fmt(ccsPerHour) + '/hr (' + (subsidyPct * 100).toFixed(1) + '% of ' + fmt(hourlyForSubsidy) + ')';
+    document.getElementById('c-gap').textContent          = fmt(gapPerHour) + '/hr (on subsidised hours)';
   }
 
-  // ── Restore or default ───────────────────────────────────────────
+  // ── Restore saved state or use defaults ───────────────────────
   const saved = loadState();
   if (saved) {
     if (saved.dailyRate)  document.getElementById('dailyRate').value = saved.dailyRate;
     if (saved.opHours)    document.getElementById('opHours').value   = saved.opHours;
 
-    // Restore days
     if (saved.days) {
-      dayBtns.forEach(btn => {
+      document.querySelectorAll('.day-btn').forEach(btn => {
         btn.classList.toggle('active', saved.days.includes(btn.dataset.day));
       });
     }
 
-    // Restore rate cap
     if (saved.rateCap) {
       rateCapSel.value = saved.rateCap;
       customField.style.display = saved.rateCap === 'custom' ? 'flex' : 'none';
     }
     if (saved.customRate) document.getElementById('customRate').value = saved.customRate;
 
-    // Restore CCS rate (no persist loop)
+    if (saved.subsidyHours != null) {
+      document.getElementById('subsidyHours').value = saved.subsidyHours;
+    }
+
+    setCCSCollapsed(!!saved.ccsCollapsed, false);
     setCCS(saved.ccsRate ?? 70, false);
   } else {
     setCCS(70, false);
