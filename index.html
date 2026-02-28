@@ -548,6 +548,31 @@
 
   .result-value { transition: all 0.3s ease; }
 
+  /* Saved indicator */
+  .saved-indicator {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--forest);
+    color: var(--cream);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 4px 14px rgba(45,74,62,0.25);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .saved-indicator.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   /* Footer */
   footer {
     text-align: center;
@@ -580,7 +605,7 @@
         <label>Daily Fee Charged</label>
         <div class="input-wrap">
           <span class="prefix">$</span>
-          <input type="number" id="dailyRate" class="has-prefix" min="0" step="0.50" value="145" placeholder="e.g. 145">
+          <input type="number" id="dailyRate" class="has-prefix" min="0" step="0.50" value="165" placeholder="e.g. 165">
         </div>
         <p class="hint">Full daily fee set by the centre</p>
       </div>
@@ -588,7 +613,7 @@
       <div class="field">
         <label>Operating Hours / Day</label>
         <div class="input-wrap">
-          <input type="number" id="opHours" class="has-suffix" min="1" max="24" step="0.5" value="10" placeholder="e.g. 10">
+          <input type="number" id="opHours" class="has-suffix" min="1" max="24" step="0.5" value="11" placeholder="e.g. 11">
           <span class="suffix">hrs</span>
         </div>
         <p class="hint">Typical centre hours (e.g. 7am–6pm = 11hrs)</p>
@@ -600,10 +625,10 @@
           <button class="day-btn active" data-day="Mon">Mon</button>
           <button class="day-btn active" data-day="Tue">Tue</button>
           <button class="day-btn active" data-day="Wed">Wed</button>
-          <button class="day-btn" data-day="Thu">Thu</button>
-          <button class="day-btn" data-day="Fri">Fri</button>
+          <button class="day-btn active" data-day="Thu">Thu</button>
+          <button class="day-btn active" data-day="Fri">Fri</button>
         </div>
-        <p class="hint" id="daysHint">3 days selected</p>
+        <p class="hint" id="daysHint">5 days selected</p>
       </div>
 
     </div>
@@ -645,11 +670,11 @@
         <div class="slider-wrap">
           <div class="slider-input-row">
             <div class="slider-track-wrap">
-              <div class="slider-track-bg"><div class="slider-track-fill" id="sliderFill" style="width:83.33%"></div></div>
-              <input type="range" id="subsidySlider" min="0" max="90" step="0.1" value="75">
+              <div class="slider-track-bg"><div class="slider-track-fill" id="sliderFill" style="width:77.78%"></div></div>
+              <input type="range" id="subsidySlider" min="0" max="90" step="0.1" value="70">
             </div>
             <div class="ccs-number-wrap">
-              <input type="number" id="subsidyNumber" min="0" max="90" step="0.1" value="75">
+              <input type="number" id="subsidyNumber" min="0" max="90" step="0.1" value="70">
               <span class="pct-suffix">%</span>
             </div>
           </div>
@@ -668,7 +693,7 @@
             <span class="bracket-income">~$135k</span>
             <span class="bracket-label">High</span>
           </button>
-          <button class="bracket-btn active" data-rate="75">
+          <button class="bracket-btn" data-rate="75">
             <span class="bracket-rate">75%</span>
             <span class="bracket-income">~$160k</span>
             <span class="bracket-label">Common</span>
@@ -762,6 +787,8 @@
     ⚠️ <strong>Estimate only.</strong> This calculator uses 2025–26 CCS hourly rate caps (effective 7 July 2025). Actual subsidy depends on your income, immunisation status, activity level, and annual cap. Gap fees may vary. Confirm figures with your centre and <a href="https://www.servicesaustralia.gov.au" target="_blank" style="color:var(--clay-dark);">Services Australia</a>.
   </div>
 
+  <div id="savedIndicator" class="saved-indicator">✓ Saved</div>
+
   <footer>
     Child Care Subsidy (CCS) · Australian Government · Services Australia<br>
     Rate caps effective 7 July 2025 · 2025–26 financial year
@@ -770,11 +797,47 @@
 </div>
 
 <script>
-  // Days selector
+  const LS_KEY = 'ccs-calc-v1';
+
+  // ── Persist helpers ──────────────────────────────────────────────
+  function saveState() {
+    try {
+      const activeDays = [...document.querySelectorAll('.day-btn.active')].map(b => b.dataset.day);
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        dailyRate:  document.getElementById('dailyRate').value,
+        opHours:    document.getElementById('opHours').value,
+        days:       activeDays,
+        rateCap:    document.getElementById('rateCap').value,
+        customRate: document.getElementById('customRate').value,
+        ccsRate:    document.getElementById('subsidySlider').value,
+      }));
+      showSaved();
+    } catch(e) {}
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (!raw) return false;
+      return JSON.parse(raw);
+    } catch(e) { return false; }
+  }
+
+  // Saved indicator
+  const savedEl = document.getElementById('savedIndicator');
+  let savedTimer;
+  function showSaved() {
+    savedEl.classList.add('visible');
+    clearTimeout(savedTimer);
+    savedTimer = setTimeout(() => savedEl.classList.remove('visible'), 1800);
+  }
+
+  // ── Days selector ────────────────────────────────────────────────
   const dayBtns = document.querySelectorAll('.day-btn');
   dayBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       btn.classList.toggle('active');
+      saveState();
       calc();
     });
   });
@@ -785,60 +848,56 @@
     return active;
   }
 
-  // CCS slider + number input (synced, decimal support)
-  const slider = document.getElementById('subsidySlider');
+  // ── CCS slider + number input ────────────────────────────────────
+  const slider  = document.getElementById('subsidySlider');
   const numInput = document.getElementById('subsidyNumber');
-  const fill = document.getElementById('sliderFill');
+  const fill    = document.getElementById('sliderFill');
 
-  function setCCS(val) {
+  function setCCS(val, persist = true) {
     val = Math.max(0, Math.min(90, parseFloat(val) || 0));
-    val = Math.round(val * 10) / 10; // round to 1dp
-    slider.value = val;
+    val = Math.round(val * 10) / 10;
+    slider.value   = val;
     numInput.value = val;
     fill.style.width = (val / 90 * 100).toFixed(2) + '%';
-    // Update bracket highlights
     document.querySelectorAll('.bracket-btn').forEach(b => {
       b.classList.toggle('active', parseFloat(b.dataset.rate) === val);
     });
+    if (persist) saveState();
     calc();
   }
 
-  slider.addEventListener('input', () => setCCS(slider.value));
+  slider.addEventListener('input',  () => setCCS(slider.value));
   numInput.addEventListener('input', () => setCCS(numInput.value));
-  numInput.addEventListener('blur', () => {
-    // Clamp on blur
-    setCCS(Math.max(0, Math.min(90, parseFloat(numInput.value) || 0)));
-  });
+  numInput.addEventListener('blur',  () => setCCS(Math.max(0, Math.min(90, parseFloat(numInput.value) || 0))));
 
-  // Income bracket quick-set buttons
   document.querySelectorAll('.bracket-btn').forEach(btn => {
     btn.addEventListener('click', () => setCCS(btn.dataset.rate));
   });
 
-  // Rate cap select
-  const rateCapSel = document.getElementById('rateCap');
+  // ── Rate cap select ──────────────────────────────────────────────
+  const rateCapSel  = document.getElementById('rateCap');
   const customField = document.getElementById('customRateField');
   rateCapSel.addEventListener('change', () => {
     customField.style.display = rateCapSel.value === 'custom' ? 'flex' : 'none';
+    saveState();
     calc();
   });
-  document.getElementById('customRate').addEventListener('input', calc);
+  document.getElementById('customRate').addEventListener('input', () => { saveState(); calc(); });
 
-  // Input listeners
+  // ── Other inputs ─────────────────────────────────────────────────
   ['dailyRate', 'opHours'].forEach(id => {
-    document.getElementById(id).addEventListener('input', calc);
+    document.getElementById(id).addEventListener('input', () => { saveState(); calc(); });
   });
 
-  const fmt = (n) => n < 0 ? `-$${Math.abs(n).toFixed(2)}` : `$${n.toFixed(2)}`;
-  const fmtK = (n) => {
-    if (n >= 1000) return `$${(n/1000).toFixed(1)}k`;
-    return fmt(n);
-  };
+  // ── Formatting ───────────────────────────────────────────────────
+  const fmt  = (n) => n < 0 ? `-$${Math.abs(n).toFixed(2)}` : `$${n.toFixed(2)}`;
+  const fmtK = (n) => n >= 1000 ? `$${(n/1000).toFixed(1)}k` : fmt(n);
 
+  // ── Calc ─────────────────────────────────────────────────────────
   function calc() {
     const daily = parseFloat(document.getElementById('dailyRate').value) || 0;
-    const hours = parseFloat(document.getElementById('opHours').value) || 0;
-    const days = getDays();
+    const hours = parseFloat(document.getElementById('opHours').value)   || 0;
+    const days  = getDays();
     const subsidyPct = parseFloat(slider.value) / 100;
 
     let cap = rateCapSel.value === 'custom'
@@ -847,31 +906,57 @@
 
     if (!daily || !hours || !days || !cap) return;
 
-    const hourlyCharged = daily / hours;
-    const hourlyForSubsidy = Math.min(hourlyCharged, cap);
-    const ccsPerHour = hourlyForSubsidy * subsidyPct;
-    const gapPerHour = hourlyCharged - ccsPerHour;
-    const gapPerDay = gapPerHour * hours;
-    const subsidyPerDay = ccsPerHour * hours;
-    const grossWeekly = daily * days;
-    const subsidyWeekly = subsidyPerDay * days;
-    const oopWeekly = gapPerDay * days;
+    const hourlyCharged     = daily / hours;
+    const hourlyForSubsidy  = Math.min(hourlyCharged, cap);
+    const ccsPerHour        = hourlyForSubsidy * subsidyPct;
+    const gapPerHour        = hourlyCharged - ccsPerHour;
+    const gapPerDay         = gapPerHour * hours;
+    const subsidyPerDay     = ccsPerHour * hours;
+    const grossWeekly       = daily * days;
+    const subsidyWeekly     = subsidyPerDay * days;
+    const oopWeekly         = gapPerDay * days;
 
-    document.getElementById('r-gross').textContent = fmt(grossWeekly);
-    document.getElementById('r-subsidyAmt').textContent = fmt(subsidyWeekly);
-    document.getElementById('r-weekly').textContent = fmt(oopWeekly);
-    document.getElementById('r-daily-oop').textContent = fmt(gapPerDay) + ' per booked day';
-    document.getElementById('r-annual-gross').textContent = fmtK(grossWeekly * 50);
+    document.getElementById('r-gross').textContent       = fmt(grossWeekly);
+    document.getElementById('r-subsidyAmt').textContent  = fmt(subsidyWeekly);
+    document.getElementById('r-weekly').textContent      = fmt(oopWeekly);
+    document.getElementById('r-daily-oop').textContent   = fmt(gapPerDay) + ' per booked day';
+    document.getElementById('r-annual-gross').textContent   = fmtK(grossWeekly * 50);
     document.getElementById('r-annual-subsidy').textContent = fmtK(subsidyWeekly * 50);
-    document.getElementById('r-annual-oop').textContent = fmtK(oopWeekly * 50);
+    document.getElementById('r-annual-oop').textContent     = fmtK(oopWeekly * 50);
 
-    document.getElementById('c-hourly').textContent = fmt(hourlyCharged) + '/hr';
-    document.getElementById('c-cap').textContent = fmt(cap) + '/hr';
+    document.getElementById('c-hourly').textContent     = fmt(hourlyCharged) + '/hr';
+    document.getElementById('c-cap').textContent        = fmt(cap) + '/hr';
     document.getElementById('c-ccs-hourly').textContent = fmt(ccsPerHour) + '/hr (' + (subsidyPct*100).toFixed(1) + '% of ' + fmt(hourlyForSubsidy) + ')';
-    document.getElementById('c-gap').textContent = fmt(gapPerHour) + '/hr';
+    document.getElementById('c-gap').textContent        = fmt(gapPerHour) + '/hr';
   }
 
-  setCCS(75);
+  // ── Restore or default ───────────────────────────────────────────
+  const saved = loadState();
+  if (saved) {
+    if (saved.dailyRate)  document.getElementById('dailyRate').value = saved.dailyRate;
+    if (saved.opHours)    document.getElementById('opHours').value   = saved.opHours;
+
+    // Restore days
+    if (saved.days) {
+      dayBtns.forEach(btn => {
+        btn.classList.toggle('active', saved.days.includes(btn.dataset.day));
+      });
+    }
+
+    // Restore rate cap
+    if (saved.rateCap) {
+      rateCapSel.value = saved.rateCap;
+      customField.style.display = saved.rateCap === 'custom' ? 'flex' : 'none';
+    }
+    if (saved.customRate) document.getElementById('customRate').value = saved.customRate;
+
+    // Restore CCS rate (no persist loop)
+    setCCS(saved.ccsRate ?? 70, false);
+  } else {
+    setCCS(70, false);
+  }
+
+  calc();
 </script>
 </body>
 </html>
