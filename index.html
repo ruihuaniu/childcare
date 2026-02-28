@@ -629,8 +629,8 @@
               <select id="subsidyHours">
                 <option value="0">0 hrs — No activity / not meeting test</option>
                 <option value="36">36 hrs — Meets lower activity test</option>
-                <option value="72" selected>72 hrs — Meets standard activity test</option>
-                <option value="100">100 hrs — Meets higher activity test</option>
+                <option value="72">72 hrs — Meets standard activity test</option>
+                <option value="100" selected>100 hrs — Meets higher activity test</option>
               </select>
             </div>
             <p class="hint">Based on your fortnightly activity level (work, study, volunteering, etc.)</p>
@@ -850,11 +850,11 @@
   const numInput = document.getElementById('subsidyNumber');
   const fill     = document.getElementById('sliderFill');
 
-  function setCCS(val, persist = true) {
+  function setCCS(val, persist = true, skipNumberInput = false) {
     val = Math.max(0, Math.min(90, parseFloat(val) || 0));
     val = Math.round(val * 10) / 10;
-    slider.value   = val;
-    numInput.value = val;
+    slider.value = val;
+    if (!skipNumberInput) numInput.value = val;
     fill.style.width = (val / 90 * 100).toFixed(2) + '%';
     document.querySelectorAll('.bracket-btn').forEach(b => {
       b.classList.toggle('active', parseFloat(b.dataset.rate) === val);
@@ -863,9 +863,19 @@
     calc();
   }
 
-  slider.addEventListener('input',  () => setCCS(slider.value));
-  numInput.addEventListener('input', () => setCCS(numInput.value));
-  numInput.addEventListener('blur',  () => setCCS(Math.max(0, Math.min(90, parseFloat(numInput.value) || 0))));
+  // Slider drives everything including the number field
+  slider.addEventListener('input', () => setCCS(slider.value));
+
+  // While typing, only update slider+fill without overwriting the number field mid-entry
+  numInput.addEventListener('input', () => {
+    const raw = parseFloat(numInput.value);
+    if (!isNaN(raw)) setCCS(raw, true, true); // skipNumberInput = true
+  });
+
+  // On blur, clamp and fully normalise
+  numInput.addEventListener('blur', () => {
+    setCCS(Math.max(0, Math.min(90, parseFloat(numInput.value) || 0)));
+  });
 
   document.querySelectorAll('.bracket-btn').forEach(btn => {
     btn.addEventListener('click', () => setCCS(btn.dataset.rate));
