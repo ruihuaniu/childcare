@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Primary SEO -->
-<title>CCS Fee Calculator 2025–26 | Australian Child Care Subsidy Out-of-Pocket Estimator</title>
+<title>CCS Fee Calculator 2025–26 / 2026–27 | Australian Child Care Subsidy Out-of-Pocket Estimator</title>
 <meta name="description"
-  content="Calculate your real out-of-pocket child care costs after the Australian Child Care Subsidy (CCS) using 2025–26 government hourly rate caps. Enter your daily fee, booked days, activity test hours, and CCS rate for an instant weekly and annual estimate.">
+  content="Calculate your real out-of-pocket child care costs after the Australian Child Care Subsidy (CCS) using 2025–26 and 2026–27 government hourly rate caps. Enter your daily fee, booked days, activity test hours, and CCS rate for an instant weekly and annual estimate.">
 <meta name="keywords"
   content="CCS calculator, child care subsidy calculator, Australian child care cost, out of pocket child care, CCS 2025, CCS 2026, childcare gap fee, child care subsidy estimator, CCSS Australia, long day care cost calculator">
 <meta name="author" content="CCS Fee Calculator">
@@ -695,6 +695,21 @@
     color: #fff;
   }
 
+  /* ── FY auto badge ── */
+  .fy-auto-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(45,74,62,0.10);
+    color: var(--forest);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
   /* ── Footer ── */
   footer {
     text-align: center;
@@ -710,7 +725,7 @@
 <div class="container">
 
   <header>
-    <span class="badge">Australia · CCS 2025–26</span>
+    <span class="badge" id="headerBadge">Australia · CCS 2025–26</span>
     <h1>Child Care<br><em>Fee Calculator</em></h1>
     <p class="subtitle">Estimate your out-of-pocket costs after the<br>Child Care Subsidy (CCS) is applied.</p>
   </header>
@@ -800,20 +815,28 @@
       <div class="card-body" style="padding-top:28px;">
         <div class="fields-grid">
 
+          <!-- Financial Year -->
+          <div class="field">
+            <label>Financial Year <span class="fy-auto-tag" id="fyAutoTag">Auto</span></label>
+            <div class="input-wrap">
+              <select id="financialYear">
+                <option value="2025">2025–26 (effective 7 Jul 2025)</option>
+                <option value="2026">2026–27 (effective 7 Jul 2026)</option>
+              </select>
+            </div>
+            <p class="hint" id="fyHint"></p>
+          </div>
+
           <!-- Rate Cap -->
           <div class="field">
             <label>CCS Hourly Rate Cap</label>
             <div class="input-wrap">
               <span class="prefix">$</span>
               <select id="rateCap" style="padding-left:28px;">
-                <option value="14.63">$14.63 — Centre-Based Day Care (below school age)</option>
-                <option value="12.81">$12.81 — Outside School Hours Care (school age)</option>
-                <option value="13.56">$13.56 — Family Day Care (all ages)</option>
-                <option value="39.80">$39.80 — In Home Care (per family)</option>
                 <option value="custom">Custom rate…</option>
               </select>
             </div>
-            <p class="hint">2025–26 government hourly rate cap by service type (effective 7 July 2025)</p>
+            <p class="hint" id="rateCapHint"></p>
           </div>
 
           <!-- Custom rate cap -->
@@ -969,7 +992,7 @@
   </div>
 
   <div class="note">
-    ⚠️ <strong>Estimate only.</strong> This calculator uses 2025–26 CCS hourly rate caps (effective 7 July 2025). Actual subsidy depends on your income, immunisation status, activity test result, and the annual CCS cap. Gap fees may vary. Confirm figures with your centre and <a href="https://www.servicesaustralia.gov.au" target="_blank" style="color:var(--clay-dark);">Services Australia</a>.
+    ⚠️ <strong>Estimate only.</strong> This calculator uses CCS hourly rate caps for 2025–26 (effective 7 July 2025) and 2026–27 (effective 7 July 2026). Actual subsidy depends on your income, immunisation status, activity test result, and the annual CCS cap. Gap fees may vary. Confirm figures with your centre and <a href="https://www.servicesaustralia.gov.au" target="_blank" style="color:var(--clay-dark);">Services Australia</a>.
   </div>
 
   <div id="savedIndicator" class="saved-indicator">✓ Saved</div>
@@ -992,7 +1015,7 @@
 
   <footer>
     Child Care Subsidy (CCS) · Australian Government · Services Australia<br>
-    Rate caps effective 7 July 2025 · 2025–26 financial year
+    2025–26 caps effective 7 July 2025 · 2026–27 caps effective 7 July 2026
   </footer>
 
 </div>
@@ -1006,15 +1029,16 @@
       const w1Days = [...document.querySelectorAll('.day-btn[data-week="1"].active')].map(b => b.dataset.day);
       const w2Days = [...document.querySelectorAll('.day-btn[data-week="2"].active')].map(b => b.dataset.day);
       localStorage.setItem(LS_KEY, JSON.stringify({
-        dailyRate:    document.getElementById('dailyRate').value,
-        opHours:      document.getElementById('opHours').value,
+        dailyRate:     document.getElementById('dailyRate').value,
+        opHours:       document.getElementById('opHours').value,
         w1Days,
         w2Days,
-        rateCap:      document.getElementById('rateCap').value,
-        customRate:   document.getElementById('customRate').value,
-        ccsRate:      document.getElementById('subsidySlider').value,
-        subsidyHours: document.getElementById('subsidyHours').value,
-        ccsCollapsed: document.getElementById('ccsToggle').classList.contains('collapsed'),
+        financialYear: document.getElementById('financialYear').value,
+        rateCap:       document.getElementById('rateCap').value,
+        customRate:    document.getElementById('customRate').value,
+        ccsRate:       document.getElementById('subsidySlider').value,
+        subsidyHours:  document.getElementById('subsidyHours').value,
+        ccsCollapsed:  document.getElementById('ccsToggle').classList.contains('collapsed'),
       }));
       showSaved();
     } catch(e) {}
@@ -1129,9 +1153,95 @@
     btn.addEventListener('click', () => setCCS(btn.dataset.rate));
   });
 
+  // ── Rate cap data by financial year ──────────────────────────
+  const RATE_CAPS = {
+    2025: {
+      label: '2025–26',
+      effectiveDate: '7 July 2025',
+      rates: [
+        { value: '14.63', label: '$14.63 — Centre-Based Day Care (below school age)' },
+        { value: '12.81', label: '$12.81 — Outside School Hours Care (school age)' },
+        { value: '13.56', label: '$13.56 — Family Day Care (all ages)' },
+        { value: '39.80', label: '$39.80 — In Home Care (per family)' },
+      ]
+    },
+    2026: {
+      label: '2026–27',
+      effectiveDate: '7 July 2026',
+      rates: [
+        { value: '15.34', label: '$15.34 — Centre-Based Day Care (below school age)' },
+        { value: '13.43', label: '$13.43 — Outside School Hours Care (school age)' },
+        { value: '14.22', label: '$14.22 — Family Day Care (all ages)' },
+        { value: '41.74', label: '$41.74 — In Home Care (per family)' },
+      ]
+    }
+  };
+
+  // ── Detect current financial year (AU: Jul 1 – Jun 30) ───────
+  function getCurrentFY() {
+    const now = new Date();
+    // FY key = year that the July starts in
+    return now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+  }
+
+  // ── Populate rate cap options for a given FY ─────────────────
+  function populateRateCaps(fy, selectValue, isAuto = false) {
+    const data = RATE_CAPS[fy];
+    const rateCapSel = document.getElementById('rateCap');
+    const prevVal = selectValue !== undefined && selectValue !== null ? selectValue : null;
+    rateCapSel.innerHTML = '';
+    data.rates.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.value;
+      opt.textContent = r.label;
+      rateCapSel.appendChild(opt);
+    });
+    const customOpt = document.createElement('option');
+    customOpt.value = 'custom';
+    customOpt.textContent = 'Custom rate…';
+    rateCapSel.appendChild(customOpt);
+
+    // Select appropriate rate: restore saved if valid, else default to first option
+    const matchingRate = prevVal ? data.rates.find(r => r.value === prevVal) : null;
+    if (matchingRate) {
+      rateCapSel.value = prevVal;
+    } else if (prevVal === 'custom') {
+      rateCapSel.value = 'custom';
+    } else {
+      // Default to first option (Centre-Based Day Care)
+      rateCapSel.value = data.rates[0].value;
+    }
+
+    // Update hints and badge
+    document.getElementById('rateCapHint').textContent =
+      `${data.label} government hourly rate cap by service type (effective ${data.effectiveDate})`;
+
+    const fyAutoTag = document.getElementById('fyAutoTag');
+    if (isAuto) {
+      fyAutoTag.style.display = '';
+      document.getElementById('fyHint').textContent =
+        `Auto-selected based on today's date. You can override manually.`;
+    } else {
+      fyAutoTag.style.display = 'none';
+    }
+
+    // Update header badge
+    document.getElementById('headerBadge').textContent = `Australia · CCS ${data.label}`;
+
+    document.getElementById('customRateField').style.display = rateCapSel.value === 'custom' ? 'flex' : 'none';
+  }
+
   // ── Rate cap + custom ─────────────────────────────────────────
   const rateCapSel  = document.getElementById('rateCap');
   const customField = document.getElementById('customRateField');
+  const fySelect    = document.getElementById('financialYear');
+
+  fySelect.addEventListener('change', () => {
+    document.getElementById('fyAutoTag').style.display = 'none';
+    document.getElementById('fyHint').textContent = 'Manually selected financial year.';
+    populateRateCaps(parseInt(fySelect.value));
+    saveState(); calc();
+  });
 
   rateCapSel.addEventListener('change', () => {
     customField.style.display = rateCapSel.value === 'custom' ? 'flex' : 'none';
@@ -1199,6 +1309,27 @@
 
   // ── Restore saved state or use defaults ───────────────────────
   const saved = loadState();
+
+  // Determine which FY to use: saved preference, or auto-detect
+  const autoFY = getCurrentFY();
+  const validFYs = Object.keys(RATE_CAPS).map(Number);
+  let targetFY = autoFY;
+
+  if (saved && saved.financialYear) {
+    const savedFY = parseInt(saved.financialYear);
+    if (validFYs.includes(savedFY)) targetFY = savedFY;
+  }
+
+  // Clamp to supported range
+  if (!validFYs.includes(targetFY)) targetFY = validFYs[validFYs.length - 1];
+
+  // Did the user have a saved FY preference?
+  const hadSavedFY = saved && saved.financialYear && validFYs.includes(parseInt(saved.financialYear));
+  const isAutoFY = !hadSavedFY;
+
+  fySelect.value = String(targetFY);
+  populateRateCaps(targetFY, saved ? saved.rateCap : null, isAutoFY);
+
   if (saved) {
     if (saved.dailyRate) document.getElementById('dailyRate').value = saved.dailyRate;
     if (saved.opHours)   document.getElementById('opHours').value   = saved.opHours;
@@ -1218,10 +1349,6 @@
       });
     }
 
-    if (saved.rateCap) {
-      rateCapSel.value = saved.rateCap;
-      customField.style.display = saved.rateCap === 'custom' ? 'flex' : 'none';
-    }
     if (saved.customRate) document.getElementById('customRate').value = saved.customRate;
 
     if (saved.subsidyHours != null) {
@@ -1231,6 +1358,7 @@
     setCCSCollapsed(!!saved.ccsCollapsed, false);
     setCCS(saved.ccsRate ?? 70, false);
   } else {
+    // No saved state — auto-select FY and default rate cap already handled by populateRateCaps
     setCCS(70, false);
   }
 
